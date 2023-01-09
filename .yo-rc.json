@@ -1,0 +1,16 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "version": "1.15.0",
+    "libraryName": "sp-fx-web-part-tabs",
+    "libraryId": "ccf914c7-ac28-4788-9fe6-e8f0105a1906",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "SPFx.WebPartTabs",
+    "solutionShortDescription": "SPFx.WebPartTabs description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}
