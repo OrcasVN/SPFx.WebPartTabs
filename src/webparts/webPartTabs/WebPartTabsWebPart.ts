@@ -17,6 +17,7 @@ import { update } from '@microsoft/sp-lodash-subset';
 export interface IWebPartTabsWebPartProps {
   collectionTabs: collectionTab[];
   tabStyle: tabStyle;
+  fontSize: string;
 }
 
 export default class WebPartTabsWebPart extends BaseClientSideWebPart<IWebPartTabsWebPartProps> {
@@ -31,6 +32,7 @@ export default class WebPartTabsWebPart extends BaseClientSideWebPart<IWebPartTa
         collectionTabs: this.properties.collectionTabs,
         wpContext: this.context,
         displayMode: this.displayMode,
+        fontSize: this.properties.fontSize,
       }
     );
 
@@ -106,6 +108,11 @@ export default class WebPartTabsWebPart extends BaseClientSideWebPart<IWebPartTa
                   ctx: this.context,
                   onPropertyChange: this.onValueChanged.bind(this),
                   value: this.properties.collectionTabs,
+                }),
+                PropertyPaneTextField('fontSize', {
+                  label: 'Font size',
+                  value: this.properties.fontSize,
+                  placeholder: 'Example: 16, 16px, 16em, 16rem...',
                 })
               ]
             }

@@ -12,6 +12,7 @@ export interface collectionTab {
 export interface IWebPartTabsProps {
   wpContext: WebPartContext;
   tabStyle: tabStyle;
+  fontSize: string;
   collectionTabs: collectionTab[];
   displayMode: DisplayMode;
 }

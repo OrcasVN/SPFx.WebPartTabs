@@ -16,6 +16,7 @@ export interface IWebPartOption {
 export interface ICollectionDataFieldState {
   options: IWebPartOption[];
   error: string;
+  value: any[];
 }
 
 export default class CollectionDataField extends React.Component<ICollectionDataFieldProps, ICollectionDataFieldState> {
@@ -23,7 +24,8 @@ export default class CollectionDataField extends React.Component<ICollectionData
     super(props);
     this.state = {
       options: undefined,
-      error: undefined
+      error: undefined,
+      value: this.props.value
     };
   }
 
@@ -35,6 +37,9 @@ export default class CollectionDataField extends React.Component<ICollectionData
     if (this.props.stateKey !== prevProps.stateKey) {
       this.loadOptions();
     }
+    if (this.props.value !== prevProps.value) {
+
+    }
   }
 
   private loadOptions(): void {
@@ -42,7 +47,17 @@ export default class CollectionDataField extends React.Component<ICollectionData
       error: undefined,
       options: undefined
     });
-    const allWebPartOnPage = document.querySelectorAll('div[data-sp-feature-instance-id*="-"]')
+
+    const pageContent = document.querySelector('#workbenchPageContent') //workbenchPageContent, spPageCanvasContent
+    if (!pageContent) {
+      this.setState({
+        error: 'There are no webparts on this page',
+        options: []
+      });
+      return
+    }
+
+    const allWebPartOnPage = pageContent.querySelectorAll('div[data-sp-feature-instance-id*="-"]')
     let options = []
     allWebPartOnPage.forEach(item => {
       if (item.getAttribute('data-sp-feature-tag').indexOf('Web Part Tabs') < 0) {
@@ -84,16 +99,25 @@ export default class CollectionDataField extends React.Component<ICollectionData
             { id: "DisplayOrder", title: "Display Order", type: CustomCollectionFieldType.number },
             { id: "IconName", title: "Icon Name", type: CustomCollectionFieldType.string },
           ]}
-          value={this.props.value}
+          value={this.state.value}
         />
         {error}
       </div>
     );
   }
 
-  private onChanged(value: any[]): void {
+  private onChanged(newValue: any[]): void {
+    const collectionSorted = newValue.sort((a, b) => Number(a.DisplayOrder) - Number(b.DisplayOrder)).map((item, index) => ({
+      ...item,
+      sortIdx: index + 1
+    }))
+
+    this.setState({
+      value: collectionSorted
+    })
+
     if (this.props.onChanged) {
-      this.props.onChanged(value);
+      this.props.onChanged(collectionSorted);
     }
   }
 }
