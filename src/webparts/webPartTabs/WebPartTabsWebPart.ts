@@ -12,8 +12,8 @@ import { IReadonlyTheme } from '@microsoft/sp-component-base';
 import * as strings from 'WebPartTabsWebPartStrings';
 import WebPartTabs from './components/WebPartTabs';
 import { collectionTab, IWebPartTabsProps, tabStyle } from './components/IWebPartTabsProps';
-import { PropertyFieldCollectionData, CustomCollectionFieldType } from '@pnp/spfx-property-controls/lib/PropertyFieldCollectionData';
-import WebPartTabsServices from './services';
+import { PropertyPaneCollectionData } from '../../customPropertyPaneCollectionData/PropertyPaneCollectionData';
+import { update } from '@microsoft/sp-lodash-subset';
 export interface IWebPartTabsWebPartProps {
   collectionTabs: collectionTab[];
   tabStyle: tabStyle;
@@ -22,7 +22,6 @@ export interface IWebPartTabsWebPartProps {
 export default class WebPartTabsWebPart extends BaseClientSideWebPart<IWebPartTabsWebPartProps> {
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
-  private options: any[] = [];
 
   public render(): void {
     const element: React.ReactElement<IWebPartTabsProps> = React.createElement(
@@ -40,7 +39,6 @@ export default class WebPartTabsWebPart extends BaseClientSideWebPart<IWebPartTa
 
   protected onInit(): Promise<void> {
     this._environmentMessage = this._getEnvironmentMessage();
-    this.getWebParts().then(() => { }).catch(e => console.log(e))
     return super.onInit();
   }
 
@@ -78,10 +76,12 @@ export default class WebPartTabsWebPart extends BaseClientSideWebPart<IWebPartTa
     return Version.parse('1.0');
   }
 
-  private async getWebParts() {
-    const service = new WebPartTabsServices(this.context as WebPartContext)
-    this.options = await service.getWebParts()
+
+  private onValueChanged(propertyPath: string, newValue: any) {
+    update(this.properties, propertyPath, (): any => { return newValue; });
+    this.render();
   }
+
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
@@ -101,38 +101,11 @@ export default class WebPartTabsWebPart extends BaseClientSideWebPart<IWebPartTa
                   ],
                   selectedKey: this.properties.tabStyle,
                 }),
-                PropertyFieldCollectionData("collectionTabs", {
-                  key: "collectionTabs",
-                  label: "Collection Tabs",
-                  panelHeader: "Collection tabs panel header",
-                  manageBtnLabel: "Manage collection tabs",
+                new PropertyPaneCollectionData('collectionTabs', {
+                  label: 'Collection Tabs',
+                  ctx: this.context,
+                  onPropertyChange: this.onValueChanged.bind(this),
                   value: this.properties.collectionTabs,
-                  fields: [
-                    {
-                      id: "Title",
-                      title: "Title",
-                      type: CustomCollectionFieldType.string,
-                      required: true
-                    },
-                    {
-                      id: "WebPart",
-                      title: "Web Part",
-                      type: CustomCollectionFieldType.dropdown,
-                      options: this.options,
-                      required: true
-                    },
-                    {
-                      id: "DisplayOrder",
-                      title: "Display Order",
-                      type: CustomCollectionFieldType.number
-                    },
-                    {
-                      id: "IconName",
-                      title: "Icon Name",
-                      type: CustomCollectionFieldType.string,
-                    },
-                  ],
-                  disabled: false
                 })
               ]
             }

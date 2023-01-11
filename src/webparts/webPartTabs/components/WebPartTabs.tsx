@@ -12,10 +12,9 @@ export default function WebPartTabs({ tabStyle, wpContext, collectionTabs, displ
   const handleHideWebPart = (webPartIdShown: string) => {
     const allWebPartOnPage = document.querySelectorAll('div[class*="ControlZone ControlZone--clean"]')
     allWebPartOnPage.forEach(item => {
-      const webPartContent = item.querySelector('div[data-sp-web-part-id*="-"]')
       if (
-        webPartContent.getAttribute('data-sp-web-part-id') === webPartIdShown ||
-        webPartContent.getAttribute('data-sp-web-part-id') === wpContext.manifest.id
+        item.id === webPartIdShown ||
+        item.id === wpContext.instanceId
       ) {
         if (!item.classList.contains(styles.show)) item.classList.add(styles.show)
         if (item.classList.contains(styles.hide)) item.classList.remove(styles.hide)
@@ -23,6 +22,14 @@ export default function WebPartTabs({ tabStyle, wpContext, collectionTabs, displ
         if (!item.classList.contains(styles.hide)) item.classList.add(styles.hide)
         if (item.classList.contains(styles.show)) item.classList.remove(styles.show)
       }
+    })
+  }
+
+  const showAllWebPart = () => {
+    const allWebPartOnPage = document.querySelectorAll('div[class*="ControlZone ControlZone--clean"]')
+    allWebPartOnPage.forEach(item => {
+      if (item.classList.contains(styles.show)) item.classList.remove(styles.show)
+      if (item.classList.contains(styles.hide)) item.classList.remove(styles.hide)
     })
   }
 
@@ -36,8 +43,16 @@ export default function WebPartTabs({ tabStyle, wpContext, collectionTabs, displ
   }, [wpContext, collectionTabs])
 
   React.useEffect(() => {
-    handleHideWebPart(selectedKey)
-  }, [selectedKey, displayMode])
+    if (displayMode === 1) handleHideWebPart(selectedKey)
+  }, [selectedKey])
+
+  React.useEffect(() => {
+    if (displayMode === 1) {
+      handleHideWebPart(selectedKey)
+    } else {
+      showAllWebPart()
+    }
+  }, [displayMode])
 
   const handleLinkClick = (item?: PivotItem) => {
     if (item) {
@@ -55,7 +70,7 @@ export default function WebPartTabs({ tabStyle, wpContext, collectionTabs, displ
         onLinkClick={handleLinkClick}
       >
         {
-          collectionTabs.map(item => (
+          collectionTabs.sort((a, b) => Number(a.DisplayOrder) - Number(b.DisplayOrder)).map(item => (
             <PivotItem
               headerText={item.Title}
               itemKey={item.WebPart}
