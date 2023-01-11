@@ -7,7 +7,8 @@
     "build": "gulp bundle",
     "clean": "gulp clean",
     "test": "gulp test",
-    "serve": "gulp bundle --custom-serve --max_old_space_size=4096 && fast-serve"
+    "serve": "gulp bundle --custom-serve --max_old_space_size=4096 && fast-serve",
+    "package": "gulp clean && gulp bundle --ship && gulp package-solution --ship"
   },
   "dependencies": {
     "@fluentui/react": "^8.104.3",
@@ -18,6 +19,7 @@
     "@microsoft/sp-webpart-base": "1.15.0",
     "@pnp/sp": "^3.10.0",
     "@pnp/spfx-controls-react": "^3.12.0",
+    "@pnp/spfx-property-controls": "^3.11.0",
     "office-ui-fabric-react": "7.185.7",
     "react": "16.13.1",
     "react-dom": "16.13.1",

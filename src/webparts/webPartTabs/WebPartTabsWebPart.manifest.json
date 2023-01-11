@@ -22,7 +22,8 @@
     "description": { "default": "Web Part Tabs description" },
     "officeFabricIconFontName": "Page",
     "properties": {
-      "description": "Web Part Tabs"
+      "collectionTabs": [],
+      "tabStyle" : "links"
     }
   }]
 }

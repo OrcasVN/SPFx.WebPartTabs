@@ -3,33 +3,35 @@ import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import {
   IPropertyPaneConfiguration,
-  PropertyPaneTextField
+  PropertyPaneTextField,
+  PropertyPaneDropdown
 } from '@microsoft/sp-property-pane';
-import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
+import { BaseClientSideWebPart, WebPartContext } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
 import * as strings from 'WebPartTabsWebPartStrings';
 import WebPartTabs from './components/WebPartTabs';
-import { IWebPartTabsProps } from './components/IWebPartTabsProps';
-
+import { collectionTab, IWebPartTabsProps, tabStyle } from './components/IWebPartTabsProps';
+import { PropertyFieldCollectionData, CustomCollectionFieldType } from '@pnp/spfx-property-controls/lib/PropertyFieldCollectionData';
+import WebPartTabsServices from './services';
 export interface IWebPartTabsWebPartProps {
-  description: string;
+  collectionTabs: collectionTab[];
+  tabStyle: tabStyle;
 }
 
 export default class WebPartTabsWebPart extends BaseClientSideWebPart<IWebPartTabsWebPartProps> {
-
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
+  private options: any[] = [];
 
   public render(): void {
     const element: React.ReactElement<IWebPartTabsProps> = React.createElement(
       WebPartTabs,
       {
-        description: this.properties.description,
-        isDarkTheme: this._isDarkTheme,
-        environmentMessage: this._environmentMessage,
-        hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
+        tabStyle: this.properties.tabStyle,
+        collectionTabs: this.properties.collectionTabs,
+        wpContext: this.context,
+        displayMode: this.displayMode,
       }
     );
 
@@ -38,7 +40,7 @@ export default class WebPartTabsWebPart extends BaseClientSideWebPart<IWebPartTa
 
   protected onInit(): Promise<void> {
     this._environmentMessage = this._getEnvironmentMessage();
-
+    this.getWebParts().then(() => { }).catch(e => console.log(e))
     return super.onInit();
   }
 
@@ -76,19 +78,61 @@ export default class WebPartTabsWebPart extends BaseClientSideWebPart<IWebPartTa
     return Version.parse('1.0');
   }
 
+  private async getWebParts() {
+    const service = new WebPartTabsServices(this.context as WebPartContext)
+    this.options = await service.getWebParts()
+  }
+
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
       pages: [
         {
           header: {
-            description: strings.PropertyPaneDescription
+            description: ''
           },
           groups: [
             {
-              groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('description', {
-                  label: strings.DescriptionFieldLabel
+                PropertyPaneDropdown('tabStyle', {
+                  label: 'Tab Style',
+                  options: [
+                    { key: 'links', text: 'Links' },
+                    { key: 'tabs', text: 'Tabs' }
+                  ],
+                  selectedKey: this.properties.tabStyle,
+                }),
+                PropertyFieldCollectionData("collectionTabs", {
+                  key: "collectionTabs",
+                  label: "Collection Tabs",
+                  panelHeader: "Collection tabs panel header",
+                  manageBtnLabel: "Manage collection tabs",
+                  value: this.properties.collectionTabs,
+                  fields: [
+                    {
+                      id: "Title",
+                      title: "Title",
+                      type: CustomCollectionFieldType.string,
+                      required: true
+                    },
+                    {
+                      id: "WebPart",
+                      title: "Web Part",
+                      type: CustomCollectionFieldType.dropdown,
+                      options: this.options,
+                      required: true
+                    },
+                    {
+                      id: "DisplayOrder",
+                      title: "Display Order",
+                      type: CustomCollectionFieldType.number
+                    },
+                    {
+                      id: "IconName",
+                      title: "Icon Name",
+                      type: CustomCollectionFieldType.string,
+                    },
+                  ],
+                  disabled: false
                 })
               ]
             }
