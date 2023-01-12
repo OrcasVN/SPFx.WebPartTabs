@@ -3,7 +3,7 @@ import styles from './WebPartTabs.module.scss';
 import { IWebPartTabsProps } from './IWebPartTabsProps';
 import { Pivot, PivotItem, Label } from '@fluentui/react'
 
-export default function WebPartTabs({ tabStyle, wpContext, collectionTabs, displayMode }: IWebPartTabsProps) {
+export default function WebPartTabs({ tabStyle, wpContext, collectionTabs, displayMode, fontSize }: IWebPartTabsProps) {
   const [selectedKey, setSelectedKey] = React.useState(() => {
     if (collectionTabs.length === 0) return null
     return collectionTabs[0].WebPart
@@ -60,6 +60,11 @@ export default function WebPartTabs({ tabStyle, wpContext, collectionTabs, displ
     }
   }
 
+  const handleFontSize = (fontSizeString: string): string => {
+    const removedSpacing = fontSizeString ? fontSizeString.replace(/[ ]/g, '') : '14px'
+    return isNaN(Number(removedSpacing)) ? removedSpacing : `${Number(removedSpacing)}px`
+  }
+
   return (
     <>
       <Pivot
@@ -68,6 +73,10 @@ export default function WebPartTabs({ tabStyle, wpContext, collectionTabs, displ
         headersOnly={true}
         selectedKey={selectedKey}
         onLinkClick={handleLinkClick}
+        styles={{
+          text: { fontSize: handleFontSize(fontSize) },
+          icon: { fontSize: handleFontSize(fontSize) }
+        }}
       >
         {
           collectionTabs.sort((a, b) => Number(a.DisplayOrder) - Number(b.DisplayOrder)).map(item => (

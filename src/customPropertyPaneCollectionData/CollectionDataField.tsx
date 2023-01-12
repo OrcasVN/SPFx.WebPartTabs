@@ -48,7 +48,7 @@ export default class CollectionDataField extends React.Component<ICollectionData
       options: undefined
     });
 
-    const pageContent = document.querySelector('#workbenchPageContent') //workbenchPageContent, spPageCanvasContent
+    const pageContent = document.querySelector('#spPageCanvasContent') //workbenchPageContent, spPageCanvasContent
     if (!pageContent) {
       this.setState({
         error: 'There are no webparts on this page',

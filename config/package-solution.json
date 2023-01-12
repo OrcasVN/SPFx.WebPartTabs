@@ -3,7 +3,7 @@
   "solution": {
     "name": "sp-fx-web-part-tabs-client-side-solution",
     "id": "ccf914c7-ac28-4788-9fe6-e8f0105a1906",
-    "version": "1.0.0.1",
+    "version": "1.0.0.2",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,
@@ -30,7 +30,7 @@
         "title": "sp-fx-web-part-tabs Feature",
         "description": "The feature that activates elements of the sp-fx-web-part-tabs solution.",
         "id": "778e207d-2997-4e7c-a942-639e88f7dbd8",
-        "version": "1.0.0.1"
+        "version": "1.0.0.2"
       }
     ]
   },
